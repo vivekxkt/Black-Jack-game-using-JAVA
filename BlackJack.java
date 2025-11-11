@@ -315,62 +315,110 @@ public class BlackJack extends Application {
     // START SCREEN
     // ===============================================================================================
 
-    private StackPane buildStartScreen(Runnable onStart){
+    private StackPane buildStartScreen(Runnable onStart) {
+
         StackPane splash = new StackPane();
-        splash.setStyle("-fx-background-color: linear-gradient(to bottom, #001F12, #003B1E);");
+        splash.setStyle("-fx-background-color: linear-gradient(to bottom, #002615, #014A2A);");
 
-        Rectangle grad = new Rectangle();
-        grad.widthProperty().bind(splash.widthProperty());
-        grad.heightProperty().bind(splash.heightProperty());
-        grad.setFill(new LinearGradient(0,0,1,1,true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.web("#032618")),
-                new Stop(1, Color.web("#055B39"))));
-        grad.setOpacity(0.6);
+        // --- Deep gradient background ---
+        Rectangle bg = new Rectangle();
+        bg.widthProperty().bind(splash.widthProperty());
+        bg.heightProperty().bind(splash.heightProperty());
+        bg.setFill(new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.web("#00351F")),
+                new Stop(1, Color.web("#00150C"))
+        ));
 
+        // --- Soft radial glow in the center ---
+        Rectangle glow = new Rectangle();
+        glow.widthProperty().bind(splash.widthProperty());
+        glow.heightProperty().bind(splash.heightProperty());
+        glow.setFill(new RadialGradient(
+                0, 0,
+                0.5, 0.5,
+                0.45,
+                true,
+                CycleMethod.NO_CYCLE,
+                new Stop(0, Color.color(0, 0.5, 0.2, 0.28)),
+                new Stop(1, Color.color(0, 0, 0, 0))
+        ));
+
+        // --- Floating particles (slower, smoother) ---
         Group particles = new Group();
-        for(int i=0;i<40;i++){
-            Circle c = new Circle(1.8, Color.color(1,1,1,0.06));
-            c.setEffect(new BoxBlur(2,2,2));
-            c.setTranslateX(ThreadLocalRandom.current().nextDouble(0, 1200));
-            c.setTranslateY(ThreadLocalRandom.current().nextDouble(0, 760));
+        for (int i = 0; i < 38; i++) {
+            Circle dot = new Circle(ThreadLocalRandom.current().nextDouble(1.2, 2.8));
+            dot.setFill(Color.color(1, 1, 1, ThreadLocalRandom.current().nextDouble(0.03, 0.08)));
+            dot.setEffect(new BoxBlur(3, 3, 2));
 
-            TranslateTransition tt = new TranslateTransition(
-                    Duration.seconds(ThreadLocalRandom.current().nextDouble(10,18)), c);
-            tt.setByY(-ThreadLocalRandom.current().nextDouble(40,120));
-            tt.setAutoReverse(true);
-            tt.setCycleCount(Animation.INDEFINITE);
-            tt.play();
+            dot.setTranslateX(ThreadLocalRandom.current().nextDouble(0, 1300));
+            dot.setTranslateY(ThreadLocalRandom.current().nextDouble(0, 800));
 
-            particles.getChildren().add(c);
+            TranslateTransition drift = new TranslateTransition(
+                    Duration.seconds(ThreadLocalRandom.current().nextDouble(12, 22)), dot);
+            drift.setByY(-ThreadLocalRandom.current().nextDouble(60, 140));
+            drift.setByX(ThreadLocalRandom.current().nextDouble(-20, 20));
+            drift.setAutoReverse(true);
+            drift.setCycleCount(Animation.INDEFINITE);
+            drift.play();
+
+            particles.getChildren().add(dot);
         }
 
-        Label title = new Label("BLACKJACK");
-        title.setFont(Font.font("Segoe UI", FontWeight.EXTRA_BOLD, 64));
-        title.setTextFill(Color.WHITE);
-        title.setEffect(new DropShadow(40, Color.BLACK));
+        Label clubIcon = new Label("♣");
+        clubIcon.setFont(Font.font("Segoe UI", FontWeight.EXTRA_BOLD, 110));
+        clubIcon.setTextFill(Color.WHITE);
+        clubIcon.setEffect(new DropShadow(35, Color.BLACK));
 
-        Button startBtn = makeButton("Play Blackjack");
+
+        // --- Title ---
+        Label title = new Label("BLACKJACK");
+        title.setFont(Font.font("Segoe UI", FontWeight.EXTRA_BOLD, 70));
+        title.setTextFill(Color.WHITE);
+        title.setEffect(new DropShadow(45, Color.BLACK));
+
+        // Zoom-in animation for title
+        ScaleTransition zoom = new ScaleTransition(Duration.seconds(1.1), title);
+        zoom.setFromX(0.88);
+        zoom.setFromY(0.88);
+        zoom.setToX(1);
+        zoom.setToY(1);
+        zoom.setInterpolator(Interpolator.EASE_OUT);
+        zoom.play();
+
+        // --- Subtitle ---
+        Label subtitle = new Label("A clean & animated JavaFX Blackjack game");
+        subtitle.setFont(Font.font("Segoe UI", FontWeight.SEMI_BOLD, 20));
+        subtitle.setTextFill(Color.color(1, 1, 1, 0.75));
+
+        // --- Start Button ---
+        Button startBtn = makeButton("Start Game");
         startBtn.setPrefWidth(260);
-        startBtn.setPrefHeight(70);
+        startBtn.setPrefHeight(65);
         startBtn.setFont(Font.font("Segoe UI", FontWeight.BOLD, 24));
 
-        VBox box = new VBox(30, title, startBtn);
+        VBox box = new VBox(20,clubIcon, title, subtitle, startBtn);
         box.setAlignment(Pos.CENTER);
 
-        splash.getChildren().addAll(grad, particles, box);
+        splash.getChildren().addAll(bg, glow, particles, box);
 
+        // Fade out the entire screen when button is clicked
         startBtn.setOnAction(e -> {
-            FadeTransition ft = new FadeTransition(Duration.millis(600), splash);
-            ft.setToValue(0);
-            ft.setOnFinished(ev -> {
+            FadeTransition fade = new FadeTransition(Duration.millis(650), splash);
+            fade.setToValue(0);
+            fade.setInterpolator(Interpolator.EASE_BOTH);
+
+            fade.setOnFinished(ev -> {
                 rootStack.getChildren().remove(splash);
-                if(onStart != null) onStart.run();
+                if (onStart != null) onStart.run();
             });
-            ft.play();
+
+            fade.play();
         });
 
         return splash;
     }
+
 
     // ===============================================================================================
     // GAME FLOW
