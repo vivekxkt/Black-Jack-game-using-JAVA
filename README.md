@@ -42,7 +42,7 @@ This project focuses on smooth card animations, a modern minimal UI, easy extens
 ---
 
 
-Here are some screenshots of gameplay :
+Here are some screenshots of gameplay : (Gameplay Preview)
 
 <img width="1919" height="984" alt="image" src="https://github.com/user-attachments/assets/0acddd81-8907-4d44-8ee7-f348b8e5b0bc" />
 <img width="1919" height="980" alt="Screenshot 2025-11-11 140305" src="https://github.com/user-attachments/assets/95187200-5e86-48aa-b097-c098781c6b2a" />
@@ -51,3 +51,38 @@ Here are some screenshots of gameplay :
 
 ## 📦 Project Structure
 
+src/
+│
+├── blackjack/
+│ ├── BlackJack.java # Main application + game logic + layout
+│ ├── CardModel.java # Card, Deck, Suit, Rank models
+│ ├── HUDComponents.java # Reusable HUD elements (card-style panels, labels, graph)
+│
+└── resources/
+└── (optional images, icons, etc.)
+
+## 🛠 Requirements
+
+- **Java 17+**
+- **JavaFX SDK** (controls, graphics, base modules)
+- Any Java-friendly IDE:
+  - IntelliJ IDEA  
+  - Eclipse  
+  - VS Code with JavaFX plugin  
+
+---
+
+## ✅ Running the Game
+
+### **1. Download JavaFX**
+Get the SDK from:  
+https://openjfx.io/
+
+### **2. Add VM Arguments (required)**  
+If running manually:
+
+
+🤝 Contributing
+
+Pull requests are welcome!
+If you’d like to add new features (split hands, insurance, improved animations, sounds), feel free to open an issue.
